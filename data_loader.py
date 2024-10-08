@@ -1,11 +1,11 @@
 from common import get_vec, get_labels, format_to_4_digits
 
 
-def load_data():
+def load_data(amount: int):
     
     data = []
     labels = get_labels()
-    for i in range(1, 100):
+    for i in range(1, amount):
         new_i = format_to_4_digits(i)
         
         vec = get_vec(new_i)

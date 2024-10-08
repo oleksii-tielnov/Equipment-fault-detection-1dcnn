@@ -11,7 +11,7 @@ def get_vec(index):
 
 def get_labels():
     with open(".\\zeroShot_vkiit\\key.txt", 'r') as f:
-        labels = [float(line.replace('\n', '')) for line in f.readlines()]
+        labels = [int(float(line.replace('\n', ''))) for line in f.readlines()]
 
     return labels
 
