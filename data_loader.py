@@ -1,23 +1,28 @@
-from common import get_vec, get_labels, format_to_4_digits
+import numpy as np
+
+from util import get_vec, get_labels, get_etalons, simlarity
 
 
-def load_data(amount: int):
-    
+def load_data(amount: int) -> list:
     data = []
     labels = get_labels()
-    for i in range(1, amount):
-        new_i = format_to_4_digits(i)
-        
-        vec = get_vec(new_i)
-        label = labels[i - 1]
-    
-        entity = [vec, label]
-        data.append(entity)
+    e0, e1 = get_etalons()
+
+    for _ in range(amount):
+        i = np.random.randint(1, 1159)
+
+        vec, label = get_vec(i), labels[i-1]
+        etalon = e0 if label == 0 else e1
+        pair = [vec, etalon]
+
+        data.append(pair)
 
     return data
 
 
 if __name__ == "__main__":
-    temp = load_data()
+    temp = load_data(10)
+    e0, e1 = get_etalons()
 
-    print(type(temp[0]), len(temp[0]), len(temp))
+    print(simlarity(temp[0][1], e0))
+    print(simlarity(temp[0][1], e1))
