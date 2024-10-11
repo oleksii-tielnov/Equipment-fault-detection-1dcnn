@@ -1,6 +1,6 @@
 import numpy as np
 
-from util import convolve, get_vec, simlarity, get_etalons, get_zetas, sigmoid, sigmoid_prime, update_zetas
+from util import convolve, get_vec, similarity, get_etalons, get_zetas, sigmoid, sigmoid_prime, update_zetas, get_label
 from data_loader import load_data
 
 
@@ -14,7 +14,7 @@ class OneDCNN:
 
         return a
 
-    def SGD(self, epochs, amount, mini_batch_size, learning_rate):
+    def SGD(self, amount, epochs, mini_batch_size, learning_rate):
         eta = learning_rate
 
         for _ in range(epochs):
@@ -102,8 +102,20 @@ class OneDCNN:
 
         return nabla_zeta_1(), nabla_zeta_2()
 
-    def evaluate(self):
-        pass
+    def evaluate(self, num) -> float:
+        def covariance(x):
+            return 1 if x >= 0.5 else 0
+
+        e0, e1 = get_etalons()
+        detections = 0
+
+        for i in range(1, num):
+            vec, label = get_vec(i), get_label(i)
+            prediction = covariance( similarity(e0, self.forward(vec)) )
+            detections += 1 if prediction == label else 0
+
+        accuracy = detections / num
+        return accuracy
 
 
 if __name__ == "__main__":
@@ -111,6 +123,8 @@ if __name__ == "__main__":
 
     vec = get_vec(3)
     e0, e1 = get_etalons()
+
+    # print(similarity(e1, net.forward(vec)))
 
     nabla_zeta_1, nabla_zeta_2 = net.backprop(vec, e0)
 

@@ -16,11 +16,11 @@ def get_vec(index) -> np.array:
     return vec
 
 
-def get_labels() -> list:
+def get_label(index) -> list:
     with open(".\\data\\key.txt", 'r') as f:
         labels = [int(float(line.replace('\n', ''))) for line in f.readlines()]
 
-    return labels
+    return int(labels[index - 1])
 
 
 def get_etalons() -> tuple:
@@ -30,7 +30,7 @@ def get_etalons() -> tuple:
     return (data['e_0'], data['e_1'])
 
 
-def get_zetas():
+def get_zetas() -> list:
     with open("zetas_weights.json", 'r') as file:
         data = json.load(file)
     
@@ -58,13 +58,13 @@ def convolve(v: np.array , u: np.array) -> np.array:
     return np.array(res)
 
 
-def simlarity(u, v) -> float:
+def similarity(u, v) -> float:
     return np.dot(u, v) / (norm(u) * norm(v))
 
 
-def sigmoid(z):
+def sigmoid(z) -> float:
     return 1 / (1 + np.exp(-z+4))
 
 
-def sigmoid_prime(z):
+def sigmoid_prime(z) -> float:
     return sigmoid(z) * (1 - sigmoid(z))
