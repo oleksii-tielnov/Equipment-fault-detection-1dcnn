@@ -1,6 +1,6 @@
 import numpy as np
 
-from common import convolve, get_vec, simlarity, get_etalons, get_zetas, sigmoid, sigmoid_prime, update_zetas
+from util import convolve, get_vec, simlarity, get_etalons, get_zetas, sigmoid, sigmoid_prime, update_zetas
 from data_loader import load_data
 
 
@@ -116,5 +116,5 @@ if __name__ == "__main__":
 
     net.update_mini_batch(load_data(10), 3)
 
-    # print(nabla_zeta_1)
-    # print(nabla_zeta_2)
+    print(nabla_zeta_1)
+    print(nabla_zeta_2)
