@@ -24,5 +24,8 @@ if __name__ == "__main__":
     e0, e1 = get_etalons()
 
     print(len(temp))
-    print(similarity(temp[0][1], e0))
-    print(similarity(temp[0][1], e1))
+
+    print(temp[0][1])
+
+    # print(similarity(temp[0][1], e0))
+    # print(similarity(temp[0][1], e1))

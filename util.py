@@ -30,18 +30,18 @@ def get_etalons() -> tuple:
     return (data['e_0'], data['e_1'])
 
 
-def get_zetas() -> list:
+def get_zeta() -> list:
     with open("zetas_weights.json", 'r') as file:
         data = json.load(file)
     
-    return [np.array(data['zeta_1']), np.array(data['zeta_2'])]
+    return np.array(data['zeta_1'])
 
 
-def update_zetas(zetas):
-    zetas_dict = {"zeta_1": zetas[0], "zeta_2": zetas[1]}
+def update_zeta(zeta):
+    zeta_dict = {"zeta_1": zeta}
 
     with open("zetas_weights.json", 'w') as file:
-        json.dump(zetas_dict, file, indent=4)
+        json.dump(zeta_dict, file, indent=4)
 
 
 def convolve(v: np.array , u: np.array) -> np.array:
@@ -52,8 +52,8 @@ def convolve(v: np.array , u: np.array) -> np.array:
     i = 0
     for _ in range(steps):
         temp = sum([u[m-j-1] * v[i+j] for j in range(m)])
-        res.append(temp)
         i += m
+        res.append(temp)
 
     return np.array(res)
 
@@ -68,6 +68,10 @@ def sigmoid(z) -> float:
 
 def sigmoid_prime(z) -> float:
     return sigmoid(z) * (1 - sigmoid(z))
+
+
+def flip(vec):
+    return [vec[-i-1] for i in range(len(vec))]
 
 
 if __name__ == "__main__":
