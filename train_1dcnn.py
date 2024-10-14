@@ -1,7 +1,6 @@
 from model import OneDCNN
 
 
-if __name__ == "__main__":
-    net = OneDCNN()
+net = OneDCNN()
 
-    # print(net.evaluate(100))
+net.SGD(amount=100, epochs=5, mini_batch_size=5, learning_rate=0.5)

@@ -51,7 +51,7 @@ def convolve(v: np.array , u: np.array) -> np.array:
     
     i = 0
     for _ in range(steps):
-        temp = sum([u[j-1] * v[i+j] for j in range(m)])
+        temp = sum([u[m-j-1] * v[i+j] for j in range(m)])
         res.append(temp)
         i += m
 
@@ -63,8 +63,17 @@ def similarity(u, v) -> float:
 
 
 def sigmoid(z) -> float:
-    return 1 / (1 + np.exp(-z+4))
+    return 1 / (1 + np.exp(-z))
 
 
 def sigmoid_prime(z) -> float:
     return sigmoid(z) * (1 - sigmoid(z))
+
+
+if __name__ == "__main__":
+    # for i in range(1, 20):
+        # print(f"#{i}: {get_label(i)}")
+    
+    for i in range(20):
+        print(np.random.randint(1, 1159))
+        
