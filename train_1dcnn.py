@@ -3,4 +3,4 @@ from model import OneDCNN
 
 net = OneDCNN()
 
-net.SGD(amount=1000, epochs=2, mini_batch_size=10, learning_rate=0.5)
+net.SGD(amount=1150, epochs=10, mini_batch_size=10, learning_rate=0.25)
