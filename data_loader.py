@@ -1,18 +1,15 @@
 import numpy as np
 
-from util import get_vec, get_label, get_etalons, similarity
+from util import get_vec, get_label, similarity, extract_features
 
 
 def load_data(amount: int) -> list:
     data = []
-    e0, e1 = get_etalons()
 
-    for _ in range(amount):
-        i = np.random.randint(1, 1159)
-
-        vec, label = get_vec(i), get_label(i)
-        etalon = e0 if label == 0 else e1
-        pair = [vec, etalon]
+    for i in range(1, amount):
+        step = 100
+        vec, label = extract_features(get_vec(i), step), get_label(i)
+        pair = [vec, label]
 
         data.append(pair)
 
@@ -20,12 +17,11 @@ def load_data(amount: int) -> list:
 
 
 if __name__ == "__main__":
-    temp = load_data(10)
-    e0, e1 = get_etalons()
+    n = 20
+    step = 100
+    vecs = load_data(n)
 
-    print(len(temp))
+    # ef_vecs = [extract_features(vecs[i][0], step) for i in range(len(vecs))]
 
-    print(temp[0][1])
-
-    # print(similarity(temp[0][1], e0))
-    # print(similarity(temp[0][1], e1))
+    print(vecs[0][0])
+    

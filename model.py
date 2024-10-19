@@ -1,94 +1,90 @@
 import numpy as np
 
-from util import convolve, get_vec, similarity, get_etalons, get_zeta, sigmoid, sigmoid_prime, update_zeta, get_label, flip
-from data_loader import load_data
+from util import get_vec, sigmoid, sigmoid_prime, extract_features
 
 
-class OneDCNN:
-    def __init__(self) -> None:
-        self.zeta = get_zeta()
+class MLP:
+    def __init__(self, sizes: list[int]) -> None:
+        self.num_layers = len(sizes)
+        self.sizes = sizes
+        self.biases = [np.random.randn(y, ) for y in sizes[1:]]
+        self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
 
     def forward(self, a) -> np.array:
-        a = sigmoid(convolve(a, self.zeta)) 
+        for w, b in zip(self.weights, self.biases):
+            a = sigmoid(np.dot(w, a) + b)
         return a
 
-    def SGD(self, amount: int, epochs: int, mini_batch_size: int, learning_rate: float) -> None:
+    def SGD(self, training_data, epochs: int, mini_batch_size: int, learning_rate: float) -> None:
         eta = learning_rate
 
         for _ in range(epochs):
-            training_data = load_data(amount)
-            mini_batches = [training_data[k:k+mini_batch_size] for k in range(0, amount, mini_batch_size)]
+            np.random.shuffle(training_data)
+            mini_batches = [training_data[k:k+mini_batch_size] for k in range(0, len(training_data), mini_batch_size)]
 
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
 
-        update_zeta(list(self.zeta))
+        # save weights and biases
 
     def update_mini_batch(self, mini_batch, eta) -> None:
-        h = len(self.zeta)
-
-        nabla_zeta_1 = np.zeros(shape=(h, ))
+        nabla_weights = [np.zeros(w.shape) for w in self.weights]
+        nabla_biases = [np.zeros(b.shape) for b in self.biases]
 
         for x, y in mini_batch:
-            delta_nabla_zeta_1 = self.backprop(x, y)
+            delta_nabla_weights, delta_nabla_biases = self.backprop(x, y)
 
-            nabla_zeta_1 += delta_nabla_zeta_1
-        
-        self.zeta -= (eta / len(mini_batch)) * nabla_zeta_1
+            nabla_weights = [nw + dnw for nw, dnw in zip(nabla_weights, delta_nabla_weights)]
+            nabla_biases = [nb + dnb for nb, dnb in zip(nabla_biases, delta_nabla_biases)]
 
-    def backprop(self, x, y) -> tuple[np.array]:
-        h = len(self.zeta)
-        m = len(x) // h
+        self.weights = [w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, nabla_weights)]
+        self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, nabla_biases)]
 
-        a = x
-        z = convolve(a, self.zeta)
-        new_a = sigmoid(z)
+    def backprop(self, x, y) -> tuple:
+        nabla_w = [np.zeros(w.shape) for w in self.weights]
+        nabla_b = [np.zeros(b.shape) for b in self.biases]
 
-        delta = np.multiply((new_a - y), sigmoid_prime(z))
+        zs = []
+        activation = x
+        activations = [x]
 
-        def nabla_zeta_1() -> np.array:
-            A = []
+        #region forward pass
+        for w, b in zip(self.weights, self.biases):
+            z = np.dot(w, activation) + b
+            zs.append(z)
 
-            for j in range(h):
-                activation = np.array([a[k*h+j] for k in range(m)])    
-                A.append(activation)
+            activation = sigmoid(z)
+            activations.append(activation)
+        #endregion
 
-            return np.array(flip(np.dot(A, delta)))
+        #region backward pass
+        delta = np.multiply((activations[-1] - y), sigmoid_prime(zs[-1]))
+        nabla_b[-1] = delta
+        nabla_w[-1] = np.outer(delta, activations[-2])
 
-        return nabla_zeta_1()
+        for l in range(2, self.num_layers):
+            w = self.weights[-l+1]
 
+            z = zs[-l]
+            spz = sigmoid_prime(z)
+
+            delta = np.dot(w.T, delta) * spz
+            nabla_b[-l] = delta
+            nabla_w[-l] = np.outer(delta, activations[-l-1])
+        #endregion
+
+        return (nabla_w, nabla_b)
+    
     def evaluate(self, num) -> float:
-        def covariance(x):
-            return 0 if x >= 0.5 else 1
-
-        e0, e1 = get_etalons()
-        detections = 0
-
-        for i in range(1, num):
-            vec, label = get_vec(i), get_label(i)
-            prediction = covariance( similarity(e0, self.forward(vec)) )
-            detections += 1 if prediction == label else 0
-
-        accuracy = detections / num
-        return accuracy
+        pass
 
 
 if __name__ == "__main__":
-    net = OneDCNN()
+    vec = get_vec(1)
+    vec = extract_features(vec, 100)
 
-    vec = get_vec(3)
-    e0, e1 = get_etalons()
+    net = MLP([938, 10, 10, 1])
 
-    # nabla_zeta_1 = net.backprop(vec, e0)
-
-    # print(nabla_zeta_1, len(nabla_zeta_1))
-
-    # net.update_mini_batch(load_data(10), 3)
-
-    # print(nabla_zeta_1)
-    # print(nabla_zeta_2)
-
-    print(net.evaluate(1159))
+    net.backprop(vec, 0)
 
     # print(net.forward(vec))
-    # print(similarity(net.forward(vec), e0))

@@ -1,6 +1,6 @@
-from model import OneDCNN
+from model import MLP
 
 
-net = OneDCNN()
+net = MLP()
 
-net.SGD(amount=1150, epochs=10, mini_batch_size=10, learning_rate=0.25)
+net.SGD(amount=1150, epochs=10, mini_batch_size=10, learning_rate=1)
