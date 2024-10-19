@@ -4,7 +4,7 @@ from util import get_vec, sigmoid, sigmoid_prime, extract_features, values_init,
 
 
 class MLP:
-    def __init__(self, sizes: list[int], mode: str) -> None:
+    def __init__(self, mode: str, sizes: list[int]=None) -> None:
         match mode:
             case "rand":
                 self.num_layers = len(sizes)
@@ -87,11 +87,13 @@ class MLP:
 
 
 if __name__ == "__main__":
-    vec = get_vec(1)
+    vec = get_vec(10)
     vec = extract_features(vec, 100)
 
-    net = MLP([938, 20, 20, 10, 1])
+    net = MLP(mode='init')
 
-    net.backprop(vec, 0)
+    print(net.forward(vec))
+
+    # net.backprop(vec, 0)
 
     # print(net.forward(vec))

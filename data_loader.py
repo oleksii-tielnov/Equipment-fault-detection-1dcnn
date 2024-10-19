@@ -24,4 +24,3 @@ if __name__ == "__main__":
     # ef_vecs = [extract_features(vecs[i][0], step) for i in range(len(vecs))]
 
     print(vecs[0][0])
-    
