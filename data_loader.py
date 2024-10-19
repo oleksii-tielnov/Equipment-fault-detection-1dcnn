@@ -3,10 +3,10 @@ import numpy as np
 from util import get_vec, get_label, similarity, extract_features
 
 
-def load_data(amount: int) -> list:
+def load_data(amount: int) -> list[tuple]:
     data = []
 
-    for i in range(1, amount):
+    for i in range(1, amount+1):
         step = 100
         vec, label = extract_features(get_vec(i), step), get_label(i)
         pair = [vec, label]

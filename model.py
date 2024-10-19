@@ -1,6 +1,7 @@
 import numpy as np
 
-from util import get_vec, sigmoid, sigmoid_prime, extract_features, values_init, values_update
+from util import get_vec, sigmoid, sigmoid_prime, extract_features, values_init, values_update, get_label
+from data_loader import load_data
 
 
 class MLP:
@@ -31,8 +32,6 @@ class MLP:
 
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
-
-        # save weights and biases
 
     def update_mini_batch(self, mini_batch, eta) -> None:
         nabla_weights = [np.zeros(w.shape) for w in self.weights]
@@ -82,17 +81,31 @@ class MLP:
 
         return (nabla_w, nabla_b)
     
-    def evaluate(self, num) -> float:
-        pass
+    @property
+    def evaluate(self) -> float:
+        def cov(x):
+            return 0 if x <= 0.5 else 1
+        
+        data = load_data(1158)
+
+        detections = 0
+        for signal, label in data:
+            prediction = cov(self.forward(signal)[0])
+            detections += 1 if prediction == label else 0
+        
+        acc = detections / 1158
+        return acc
 
 
 if __name__ == "__main__":
-    vec = get_vec(10)
-    vec = extract_features(vec, 100)
+    # vec = get_vec(10)
+    # vec = extract_features(vec, 100)
 
-    net = MLP(mode='init')
+    net = MLP(mode="init")
 
-    print(net.forward(vec))
+    # print(net.forward(vec))
+
+    print(net.evaluate)
 
     # net.backprop(vec, 0)
 

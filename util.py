@@ -16,14 +16,14 @@ def get_vec(index) -> np.array:
     return vec
 
 
-def get_label(index) -> list[int]:
+def get_label(index) -> int:
     with open(".\\data\\key.txt", 'r') as file:
         labels = [int(float(line.replace('\n', ''))) for line in file.readlines()]
 
     return int(labels[index - 1])
 
 
-def values_init(filename: str="values.json") -> list:
+def values_init(filename: str="values.json") -> tuple:
     with open(filename, 'r') as file:
         data = json.load(file)
 
@@ -46,7 +46,7 @@ def values_init(filename: str="values.json") -> list:
     return (sizes, w_arr, b_arr)
 
 
-def values_update(weights, biases, filename: str="values.json"):
+def values_update(weights, biases, filename: str="values.json") -> None:
     w_list = []
     b_list = []
 
@@ -84,11 +84,11 @@ def sigmoid_prime(z) -> float:
 
 
 def extract_features(vec, step: int) -> np.array:
-    def max_pool(u, s):
+    def max_pooling(u, s):
         return np.array([max(u[i:i+s]) for i in range(0, len(u), s)])
 
     vec = np.abs(vec)
-    max_pooled = max_pool(vec, step)
+    max_pooled = max_pooling(vec, step)
     return max_pooled - 3
 
 
