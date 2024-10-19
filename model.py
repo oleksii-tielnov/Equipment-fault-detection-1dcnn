@@ -1,14 +1,21 @@
 import numpy as np
 
-from util import get_vec, sigmoid, sigmoid_prime, extract_features
+from util import get_vec, sigmoid, sigmoid_prime, extract_features, values_init, values_update
 
 
 class MLP:
-    def __init__(self, sizes: list[int]) -> None:
-        self.num_layers = len(sizes)
-        self.sizes = sizes
-        self.biases = [np.random.randn(y, ) for y in sizes[1:]]
-        self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
+    def __init__(self, sizes: list[int], mode: str) -> None:
+        match mode:
+            case "rand":
+                self.num_layers = len(sizes)
+                self.sizes = sizes
+                self.biases = [np.random.randn(y, ) for y in sizes[1:]]
+                self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
+            case "init":
+                self.sizes, self.weights, self.biases = values_init()
+                self.num_layers = len(self.sizes)
+            case _:
+                raise ValueError("Incorrect mode")
 
     def forward(self, a) -> np.array:
         for w, b in zip(self.weights, self.biases):
@@ -83,7 +90,7 @@ if __name__ == "__main__":
     vec = get_vec(1)
     vec = extract_features(vec, 100)
 
-    net = MLP([938, 10, 10, 1])
+    net = MLP([938, 20, 20, 10, 1])
 
     net.backprop(vec, 0)
 

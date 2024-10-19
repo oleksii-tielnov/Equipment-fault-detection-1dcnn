@@ -23,13 +23,32 @@ def get_label(index) -> list[int]:
     return int(labels[index - 1])
 
 
-def values_init() -> list:
-    pass
+def values_init(filename: str="values.json") -> list:
+    with open(filename, 'r') as file:
+        data = json.load(file)
 
-
-def values_update(weights, biases):
+    weights = data['weights']
+    biases = data['biases']
+    
     w_arr = []
     b_arr = []
+
+    for w, b in zip(weights, biases):
+        w_mat = np.ndarray(shape=(len(w), len(w[0])), buffer=np.array(w))
+        w_arr.append(w_mat)
+
+        b_vec = np.ndarray(shape=(len(b), ), buffer=np.array(b))
+        b_arr.append(b_vec)
+
+    sizes = [w_arr[0].shape[1]]
+    sizes = list(np.concatenate((sizes, [b.shape[0] for b in b_arr])))
+
+    return (sizes, w_arr, b_arr)
+
+
+def values_update(weights, biases, filename: str="values.json"):
+    w_list = []
+    b_list = []
 
     num_layers = len(weights)
 
@@ -40,15 +59,15 @@ def values_update(weights, biases):
             vec = list(weights[i][j])
             matrix.append(vec)
 
-        w_arr.append(matrix)
+        w_list.append(matrix)
 
     for i in range(num_layers):
         vec = list(biases[i])
-        b_arr.append(vec)
+        b_list.append(vec)
 
-    values_dict = {'weights': w_arr, 'biases': b_arr}
+    values_dict = {'weights': w_list, 'biases': b_list}
 
-    with open("values.json", 'w') as file:
+    with open(filename, 'w') as file:
         json.dump(values_dict, file, indent=4)
 
 
@@ -74,7 +93,12 @@ def extract_features(vec, step: int) -> np.array:
 
 
 if __name__ == "__main__":
-    w = [np.random.randn(10, 5) for _ in range(4)]
-    b = [np.random.randn(10, ) for _ in range(4)]
+    # w = [np.random.randn(10, 5) for _ in range(4)]
+    # b = [np.random.randn(10, ) for _ in range(4)]
 
-    values_update(w, b)
+    # values_update(w, b)
+
+    # w, b = values_init()
+    s, w, b = values_init()
+
+    print(s)
