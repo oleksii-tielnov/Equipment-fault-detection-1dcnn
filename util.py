@@ -7,7 +7,7 @@ def format_to_4_digits(num: int) -> str:
     return f"{num:04d}"
 
 
-def get_vec(index) -> np.array:
+def get_vec(index: int) -> np.array:
     index = format_to_4_digits(index)
 
     with open(f".\\data\\T{index}.txt", 'r') as file:
@@ -16,7 +16,7 @@ def get_vec(index) -> np.array:
     return vec
 
 
-def get_label(index) -> int:
+def get_label(index: int) -> int:
     with open(".\\data\\key.txt", 'r') as file:
         labels = [int(float(line.replace('\n', ''))) for line in file.readlines()]
 
