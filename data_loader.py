@@ -9,7 +9,7 @@ def load_data(amount: int) -> list[tuple]:
     for i in range(1, amount+1):
         step = 100
         vec, label = extract_features(get_vec(i), step), get_label(i)
-        pair = [vec, label]
+        pair = (vec, label)
 
         data.append(pair)
 

@@ -6,7 +6,7 @@ from errors import ModeError, LossFunctionError
 
 
 class MLP:
-    def __init__(self, mode: str, loss: str, sizes: list[int]=None) -> None:
+    def __init__(self, mode: str, loss: str="quadratic", sizes: list[int]=None) -> None:
         match mode:
             case "rand":
                 self.num_layers = len(sizes)
@@ -54,7 +54,7 @@ class MLP:
         self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, nabla_biases)]
         #endregion
 
-    def backprop(self, x, y) -> tuple:
+    def backprop(self, x, y) -> tuple[list, list]:
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         nabla_b = [np.zeros(b.shape) for b in self.biases]
 
